@@ -1,26 +1,21 @@
-import { NextResponse } from 'next/server';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import { NextRequest, NextResponse } from 'next/server';
 
-export const middleware = (req) => {
+export const middleware = async (req: NextRequest) => {
   const { pathname } = req.nextUrl;
 
-  // Only proxy API requests
   if (pathname.startsWith('/api')) {
-    return new Promise((resolve, reject) => {
-      // Create the proxy middleware
-      const proxy = createProxyMiddleware({
-        target: 'http://alexcoding.es:3030', // Your backend
-        changeOrigin: true,
-        pathRewrite: { '^/api': '' }, // Remove /api prefix
-      });
+    const apiUrl = `http://alexcoding.es:3030${pathname}`; // Construct your backend URL
 
-      // Call the proxy middleware
-      proxy(req, res, (err) => {
-        if (err) return reject(err);
-        resolve();
-      });
+    const response = await fetch(apiUrl, {
+      method: req.method,
+      headers: req.headers,
+      body: req.body,
     });
+
+    const data = await response.json();
+    
+    return NextResponse.json(data, { status: response.status });
   }
 
-  return NextResponse.next(); // Continue normal request handling for other routes
+  return NextResponse.next(); // Continue with normal request flow
 };
