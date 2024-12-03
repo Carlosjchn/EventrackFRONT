@@ -1,14 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// Helper function to decide if it's a development environment and allow HTTP
-const getApiUrl = (url: string): string => {
-  if (process.env.NODE_ENV === 'development') {
-    // In development, allow HTTP for local APIs (since frontend is HTTPS)
-    return `http://${url}`;
-  }
-  return url; // In production, the backend should be HTTPS
-};
-
 export const useFetch = (url: string, method: string = 'GET', body: any = "") => {
   const [data, setData] = useState<any>();
   const [loading, setLoading] = useState(true);
@@ -20,16 +11,16 @@ export const useFetch = (url: string, method: string = 'GET', body: any = "") =>
         const options: RequestInit = {
           method,
           headers: {
-            'Content-Type': 'application/json', // Ensures the request is sent as JSON
+            'Content-Type': 'application/json', // Aseguramos que los datos enviados sean JSON
           },
         };
 
-        // Only add body if it's not a GET request
+        // Solo agregamos el cuerpo si no es una solicitud GET
         if (method !== 'GET' && body) {
           options.body = JSON.stringify(body);
         }
 
-        const response = await fetch(getApiUrl(url), options);
+        const response = await fetch(url, options);
 
         if (!response.ok) {
           throw new Error('Error fetching data');
@@ -45,7 +36,7 @@ export const useFetch = (url: string, method: string = 'GET', body: any = "") =>
     };
 
     fetchData();
-  }, [url, method, body]); // Runs whenever url, method, or body changes
+  }, [url, method, body]); // Se vuelve a ejecutar si cambian la URL, método o body
 
   return { data, loading, error };
 };
