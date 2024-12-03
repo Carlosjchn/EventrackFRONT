@@ -10,7 +10,14 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'  http://alexcoding.es:3030/api/; img-src 'self'; font-src 'self';", // Add your HTTP backend URL here
+            value: `
+              default-src 'self';
+              script-src 'self';
+              style-src 'self';
+              connect-src 'self' http://alexcoding.es:3030/api/ http://localhost:3030/; 
+              img-src 'self';
+              font-src 'self';
+            `, // Allow HTTP connections for API calls (temporary solution)
           },
         ],
       },
